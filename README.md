@@ -21,7 +21,7 @@ Built for the `learn-dev.escoffieronline.com` environment (Moodle 4.5 / PHP 8.2)
 
 ```bash
 # from the Moodle web root
-git clone git@github.com:<org>/moodle-altlogin.git local/altlogin
+git clone git@github.com:Auguste-Escoffier/moodle-altlogin.git local/altlogin
 php admin/cli/upgrade.php --non-interactive
 ```
 
