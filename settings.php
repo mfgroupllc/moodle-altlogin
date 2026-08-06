@@ -97,6 +97,14 @@ if ($hassiteconfig) {
             get_string('logoutinfo', 'local_altlogin')
         ));
 
+        $settings->add(new admin_setting_configtext(
+            'local_altlogin/logoutredirecturl',
+            get_string('logoutredirecturl', 'local_altlogin'),
+            get_string('logoutredirecturl_desc', 'local_altlogin'),
+            '',
+            PARAM_URL
+        ));
+
         $settings->add(new admin_setting_configcheckbox(
             'local_altlogin/singlelogout',
             get_string('singlelogout', 'local_altlogin'),

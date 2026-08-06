@@ -64,7 +64,10 @@ $string['intro_desc'] = 'Optional text shown above the provider buttons. Markdow
 
 $string['logoutheading'] = 'Logging out';
 $string['logoutinfo'] = '<p>Moodle ends its own session on logout and then sends people to the site home page. If anything there needs a login they arrive back here — and because the identity provider\'s session is still open, redirecting them at it signs them straight back in without a prompt. Logging out then looks like it did nothing.</p>
-<p>This plugin always handles the first half of that: after a logout it shows the sign-in page instead of redirecting, so people stay logged out of Moodle. Ending the session at the provider as well is the setting below.</p>';
+<p>This plugin always stops that: after a logout it offers the sign-in page rather than redirecting, so people stay logged out of Moodle. The settings below control where they go instead, and whether the provider\'s own session ends too.</p>';
+
+$string['logoutredirecturl'] = 'Send people here after logging out';
+$string['logoutredirecturl_desc'] = 'Where to land after logging out of Moodle — usually the identity provider\'s own site, so people carry on from somewhere familiar and can sign out of it from there if they want to. Leave empty to show this plugin\'s sign-in page instead. Also used as the return URL for single logout below.';
 
 $string['singlelogout'] = 'Also sign out of the provider';
 $string['singlelogout_desc'] = 'After logging out of Moodle, send the browser to the provider\'s end-session endpoint so the next sign-in asks for credentials again. <strong>Register this URL as a post-logout redirect URI at the provider first</strong> — Entra ID rejects unregistered ones and logout will fail: <code>{$a}</code>';

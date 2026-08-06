@@ -316,15 +316,33 @@ class helper {
     }
 
     /**
-     * Where the browser goes after the identity provider has ended its own session.
+     * The admin-configured landing page for someone who has just logged out.
      *
-     * This is the URL that has to be registered as a post-logout redirect URI at the
-     * provider — Entra ID in particular rejects anything it has not been told about.
+     * Typically the identity provider's own site, so the visitor carries on from
+     * somewhere that makes sense rather than staring at a sign-in page they did not
+     * ask for — and can sign out of the provider from there if they want to.
+     *
+     * @return moodle_url|null Null when nothing is configured.
+     */
+    public static function logout_redirect_url(): ?moodle_url {
+        $url = trim((string)get_config('local_altlogin', 'logoutredirecturl'));
+        if ($url === '') {
+            return null;
+        }
+        return new moodle_url($url);
+    }
+
+    /**
+     * Where the browser ends up after a logout.
+     *
+     * Also what gets handed to the provider as post_logout_redirect_uri when single
+     * logout is on — the URL that has to be registered at the provider, because Entra ID
+     * and friends reject anything they have not been told about.
      *
      * @return moodle_url
      */
     public static function post_logout_redirect_url(): moodle_url {
-        return new moodle_url(self::page_url(), ['loggedout' => 1]);
+        return self::logout_redirect_url() ?? new moodle_url(self::page_url(), ['loggedout' => 1]);
     }
 
     /**

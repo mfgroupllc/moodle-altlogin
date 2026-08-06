@@ -82,15 +82,20 @@ which redirects you at the provider, whose *own* session cookie is still perfect
 The provider issues a fresh code without prompting and you are back on the dashboard,
 apparently never logged out at all.
 
-This plugin handles it in two parts:
+This plugin handles it in three parts:
 
 * **Always on.** An observer on `\core\event\user_loggedout` drops a short-lived cookie,
   and the login page honours it by showing the sign-in page rather than redirecting. You
   stay logged out of Moodle. Clicking the provider button will still sign you back in
   without a prompt, because the provider session is untouched.
+* **"Send people here after logging out".** A URL to land on instead — usually the identity
+  provider's own site, so people carry on from somewhere familiar rather than staring at a
+  sign-in page they did not ask for, and can sign out of the provider from there. Leave it
+  empty to show this plugin's sign-in page.
 * **Optional: "Also sign out of the provider".** After logout, sends the browser to the
   provider's OpenID Connect `end_session_endpoint` so the provider session ends too and the
-  next sign-in asks for credentials.
+  next sign-in asks for credentials. Only possible if the provider publishes one — see
+  below.
 
 ### Before enabling single logout
 
@@ -110,6 +115,21 @@ This plugin handles it in two parts:
 
 If logout starts failing after you enable this, turn the setting off — logout goes back to
 Moodle's own behaviour immediately.
+
+### Providers with no end-session endpoint
+
+Plenty of them exist — Google has never supported RP-initiated logout, and the miniOrange
+OAuth server for WordPress does not publish one either. Check before assuming:
+
+```bash
+curl -s "<issuer base url>/.well-known/openid-configuration" | python3 -m json.tool | grep -i endpoint
+```
+
+No `end_session_endpoint` in the output means single logout is not available, full stop.
+Use the post-logout redirect URL instead and let people sign out of the provider on its own
+site. Do not try to substitute the provider's ordinary web logout URL — WordPress's, for
+instance, needs a `_wpnonce` that Moodle cannot generate, and `wp_safe_redirect` drops any
+`redirect_to` pointing at another domain.
 
 ## Safety rails
 

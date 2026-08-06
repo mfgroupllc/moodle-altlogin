@@ -60,7 +60,9 @@ class observer {
             return;
         }
 
-        $url = helper::single_logout_url();
+        // Single logout when the provider supports it, otherwise just hand the visitor
+        // over to wherever the admin wants them to land.
+        $url = helper::single_logout_url() ?? helper::logout_redirect_url();
         if ($url) {
             // Pre-empts the rest of require_logout(). Moodle's session is already gone
             // by this point; what is skipped is other auth plugins' postlogout_hook().

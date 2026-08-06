@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_altlogin';
-$plugin->version   = 2026080601;
+$plugin->version   = 2026080602;
 $plugin->requires  = 2024100700;        // Moodle 4.5.
 $plugin->supported = [405, 500];
 $plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '1.1.0';
+$plugin->release   = '1.2.0';
