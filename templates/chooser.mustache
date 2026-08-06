@@ -25,6 +25,7 @@
     * intro - Formatted intro HTML.
     * hasnotice - Whether a notice should be shown.
     * notice - Notice text, e.g. why the last login attempt failed.
+    * noticetype - Bootstrap alert suffix for the notice, e.g. "danger" or "info".
     * hasproviders - Whether any identity providers are available.
     * providers - Array of {url, name, iconurl}.
     * showlocallink - Whether to link to the site account login form.
@@ -38,6 +39,7 @@
         "intro": "<p>Sign in with your school account.</p>",
         "hasnotice": false,
         "notice": "",
+        "noticetype": "info",
         "hasproviders": true,
         "providers": [
             {"url": "https://example.com/auth/oauth2/login.php?id=1", "name": "Microsoft", "iconurl": ""}
@@ -54,7 +56,7 @@
                 <h2 class="card-title h4 text-center">{{heading}}</h2>
 
                 {{#hasnotice}}
-                    <div class="alert alert-danger" role="alert">{{notice}}</div>
+                    <div class="alert alert-{{noticetype}}" role="alert">{{notice}}</div>
                 {{/hasnotice}}
 
                 {{#hasintro}}

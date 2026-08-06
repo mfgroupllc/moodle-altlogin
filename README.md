@@ -73,6 +73,44 @@ The bypass parameter is checked before anything else in `index.php`, before the 
 lookup and before the login state check, so a broken or deleted OAuth issuer can never
 block it.
 
+## Logging out
+
+Fronting Moodle with SSO breaks logout in a way that looks like a bug in Moodle but is not.
+Moodle destroys its own session correctly, then sends you to the site home page. If
+anything there needs a login you land back on the login page — which is this plugin —
+which redirects you at the provider, whose *own* session cookie is still perfectly valid.
+The provider issues a fresh code without prompting and you are back on the dashboard,
+apparently never logged out at all.
+
+This plugin handles it in two parts:
+
+* **Always on.** An observer on `\core\event\user_loggedout` drops a short-lived cookie,
+  and the login page honours it by showing the sign-in page rather than redirecting. You
+  stay logged out of Moodle. Clicking the provider button will still sign you back in
+  without a prompt, because the provider session is untouched.
+* **Optional: "Also sign out of the provider".** After logout, sends the browser to the
+  provider's OpenID Connect `end_session_endpoint` so the provider session ends too and the
+  next sign-in asks for credentials.
+
+### Before enabling single logout
+
+1. **Register the post-logout redirect URI at the provider.** Entra ID rejects
+   unregistered ones and logout will fail outright. The exact URL is printed in the plugin
+   settings; it is
+   `https://<site>/local/altlogin/index.php?loggedout=1`.
+2. **Check an endpoint exists.** Moodle's OpenID Connect discovery saves every `*_endpoint`
+   key the provider publishes, so for Entra ID and Keycloak it is already in the database
+   and the settings page will show it. **Google publishes no end-session endpoint** — it has
+   no RP-initiated logout — so single logout cannot work with a Google issuer, and the
+   override field will not help.
+3. Note that the redirect happens inside the logout event, which pre-empts the rest of
+   `require_logout()`. Moodle's session is already destroyed by then; what gets skipped is
+   any other auth plugin's `postlogout_hook()`. On a site whose only SSO is this one, that
+   is nothing.
+
+If logout starts failing after you enable this, turn the setting off — logout goes back to
+Moodle's own behaviour immediately.
+
 ## Safety rails
 
 * **Failed logins do not redirect.** When core bounces a failed attempt back to the

@@ -35,6 +35,7 @@ use local_altlogin\helper;
 
 $errorcode = optional_param('errorcode', 0, PARAM_INT);
 $wantsurlparam = optional_param('wantsurl', '', PARAM_LOCALURL);
+$loggedout = optional_param('loggedout', 0, PARAM_BOOL);
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url(helper::page_url());
@@ -61,10 +62,20 @@ $wantsurl = !empty($SESSION->wantsurl) ? $SESSION->wantsurl : '';
 $issuer = helper::get_selected_issuer();
 $autoredirect = get_config('local_altlogin', 'mode') !== 'chooser';
 $notice = helper::error_message($errorcode);
+$noticetype = 'danger';
+
+// The cookie is set by our user_loggedout observer; the parameter is how the identity
+// provider hands the visitor back after a single logout. Either one means "do not sign
+// this person straight back in".
+$loggedout = $loggedout || helper::logout_marker_present();
 
 if ($errorcode) {
     // Something went wrong on the last attempt. Redirecting again would just hide it.
     $autoredirect = false;
+} else if ($loggedout) {
+    $autoredirect = false;
+    $notice = get_string('loggedout', 'local_altlogin');
+    $noticetype = 'info';
 } else if (!$issuer) {
     $autoredirect = false;
     if (is_siteadmin()) {
@@ -80,6 +91,7 @@ if ($autoredirect) {
 }
 
 helper::reset_redirect_counter();
+helper::clear_logout_marker();
 
 $sitename = format_string($SITE->fullname);
 $heading = trim((string)get_config('local_altlogin', 'heading'));
@@ -92,6 +104,7 @@ $templatecontext = [
     'hasintro' => $intro !== '',
     'notice' => $notice,
     'hasnotice' => $notice !== '',
+    'noticetype' => $noticetype,
     'providers' => helper::get_providers($wantsurl),
     'showlocallink' => !empty(get_config('local_altlogin', 'showlocallink')),
     'locallinkurl' => helper::bypass_url()->out(false),

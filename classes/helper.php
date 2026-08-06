@@ -41,6 +41,9 @@ class helper {
     /** @var int Seconds over which LOOP_THRESHOLD redirects count as a loop. */
     const LOOP_WINDOW = 30;
 
+    /** @var int Seconds the "just logged out" marker survives. */
+    const LOGOUT_MARKER_TTL = 300;
+
     /**
      * URL of this plugin's login page.
      *
@@ -243,6 +246,124 @@ class helper {
             default:
                 return $errorcode ? get_string('invalidlogin') : '';
         }
+    }
+
+    /**
+     * Name of the cookie that marks a session as having just been logged out.
+     *
+     * A cookie rather than a session flag because logging out is precisely the moment
+     * the session is destroyed — there is nowhere else to leave a note for ourselves.
+     *
+     * @return string
+     */
+    public static function logout_marker_name(): string {
+        global $CFG;
+        return 'MOODLEALTLOGOUT_' . $CFG->sessioncookie;
+    }
+
+    /**
+     * Leave a note that the visitor has just logged out, so the next page view here
+     * offers the provider instead of silently signing them straight back in.
+     */
+    public static function set_logout_marker(): void {
+        global $CFG;
+
+        if (headers_sent()) {
+            return;
+        }
+        setcookie(self::logout_marker_name(), '1', [
+            'expires' => time() + self::LOGOUT_MARKER_TTL,
+            'path' => !empty($CFG->sessioncookiepath) ? $CFG->sessioncookiepath : '/',
+            'domain' => !empty($CFG->sessioncookiedomain) ? $CFG->sessioncookiedomain : '',
+            'secure' => is_moodle_cookie_secure(),
+            'httponly' => !empty($CFG->cookiehttponly),
+            // Lax so the cookie survives the trip back from the identity provider.
+            'samesite' => 'Lax',
+        ]);
+        $_COOKIE[self::logout_marker_name()] = '1';
+    }
+
+    /**
+     * Whether the visitor arrived here straight from a logout.
+     *
+     * @return bool
+     */
+    public static function logout_marker_present(): bool {
+        return !empty($_COOKIE[self::logout_marker_name()]);
+    }
+
+    /**
+     * Drop the logout marker, so the next visit auto-redirects as normal.
+     */
+    public static function clear_logout_marker(): void {
+        global $CFG;
+
+        if (!self::logout_marker_present()) {
+            return;
+        }
+        unset($_COOKIE[self::logout_marker_name()]);
+        if (headers_sent()) {
+            return;
+        }
+        setcookie(self::logout_marker_name(), '', [
+            'expires' => time() - HOURSECS,
+            'path' => !empty($CFG->sessioncookiepath) ? $CFG->sessioncookiepath : '/',
+            'domain' => !empty($CFG->sessioncookiedomain) ? $CFG->sessioncookiedomain : '',
+            'secure' => is_moodle_cookie_secure(),
+            'httponly' => !empty($CFG->cookiehttponly),
+            'samesite' => 'Lax',
+        ]);
+    }
+
+    /**
+     * Where the browser goes after the identity provider has ended its own session.
+     *
+     * This is the URL that has to be registered as a post-logout redirect URI at the
+     * provider — Entra ID in particular rejects anything it has not been told about.
+     *
+     * @return moodle_url
+     */
+    public static function post_logout_redirect_url(): moodle_url {
+        return new moodle_url(self::page_url(), ['loggedout' => 1]);
+    }
+
+    /**
+     * The end-session endpoint discovered for the selected issuer, for display in the
+     * settings page so an admin can see whether an override is needed.
+     *
+     * @return string Empty when the issuer publishes none.
+     */
+    public static function detected_end_session_endpoint(): string {
+        $issuer = self::get_selected_issuer();
+        return $issuer ? (string)$issuer->get_endpoint_url('end_session') : '';
+    }
+
+    /**
+     * The provider's end-session endpoint, if single logout is switched on and one exists.
+     *
+     * OpenID Connect discovery stores every "*_endpoint" key the provider publishes, so
+     * for Entra ID and Keycloak this is already in the database. Google publishes no
+     * end-session endpoint at all, which is what the manual override is for.
+     *
+     * @return moodle_url|null
+     */
+    public static function single_logout_url(): ?moodle_url {
+        if (empty(get_config('local_altlogin', 'singlelogout'))) {
+            return null;
+        }
+
+        $endpoint = trim((string)get_config('local_altlogin', 'endsessionurl'));
+        if ($endpoint === '') {
+            $issuer = self::get_selected_issuer();
+            $endpoint = $issuer ? (string)$issuer->get_endpoint_url('end_session') : '';
+        }
+        if ($endpoint === '') {
+            return null;
+        }
+
+        $url = new moodle_url($endpoint);
+        $url->param('post_logout_redirect_uri', self::post_logout_redirect_url()->out(false));
+        return $url;
     }
 
     /**

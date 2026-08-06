@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version information.
+ * Event observer definitions.
  *
  * @package    local_altlogin
  * @copyright  2026 Auguste Escoffier School of Culinary Arts
@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_altlogin';
-$plugin->version   = 2026080601;
-$plugin->requires  = 2024100700;        // Moodle 4.5.
-$plugin->supported = [405, 500];
-$plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '1.1.0';
+$observers = [
+    [
+        'eventname' => '\core\event\user_loggedout',
+        'callback' => '\local_altlogin\observer::user_loggedout',
+    ],
+];

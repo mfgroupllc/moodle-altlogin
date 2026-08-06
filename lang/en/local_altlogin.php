@@ -62,6 +62,20 @@ $string['heading_desc'] = 'Shown at the top of the chooser page. Defaults to the
 $string['intro'] = 'Intro text';
 $string['intro_desc'] = 'Optional text shown above the provider buttons. Markdown is accepted.';
 
+$string['logoutheading'] = 'Logging out';
+$string['logoutinfo'] = '<p>Moodle ends its own session on logout and then sends people to the site home page. If anything there needs a login they arrive back here — and because the identity provider\'s session is still open, redirecting them at it signs them straight back in without a prompt. Logging out then looks like it did nothing.</p>
+<p>This plugin always handles the first half of that: after a logout it shows the sign-in page instead of redirecting, so people stay logged out of Moodle. Ending the session at the provider as well is the setting below.</p>';
+
+$string['singlelogout'] = 'Also sign out of the provider';
+$string['singlelogout_desc'] = 'After logging out of Moodle, send the browser to the provider\'s end-session endpoint so the next sign-in asks for credentials again. <strong>Register this URL as a post-logout redirect URI at the provider first</strong> — Entra ID rejects unregistered ones and logout will fail: <code>{$a}</code>';
+
+$string['endsessionurl'] = 'End-session endpoint override';
+$string['endsessionurl_desc'] = 'Leave empty to use the endpoint discovered from the provider. Set this only if the provider publishes no <code>end_session_endpoint</code> — Google, for instance, has no sign-out endpoint at all, so single logout cannot work there. Currently detected: <code>{$a}</code>';
+
+$string['endsessionnone'] = 'none — the selected provider publishes no end-session endpoint';
+
+$string['loggedout'] = 'You have been logged out.';
+
 $string['noproviders'] = 'No sign-in providers are available. Please contact the site administrator.';
 $string['locallogin'] = 'Sign in with a site account';
 $string['redirectloop'] = 'Sign-in was attempted several times in a row without success, so the automatic redirect has been paused. Use {$a} to reach the standard login form.';

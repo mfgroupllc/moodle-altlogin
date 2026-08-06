@@ -91,6 +91,28 @@ if ($hassiteconfig) {
             0
         ));
 
+        $settings->add(new admin_setting_heading(
+            'local_altlogin/logoutheading',
+            get_string('logoutheading', 'local_altlogin'),
+            get_string('logoutinfo', 'local_altlogin')
+        ));
+
+        $settings->add(new admin_setting_configcheckbox(
+            'local_altlogin/singlelogout',
+            get_string('singlelogout', 'local_altlogin'),
+            get_string('singlelogout_desc', 'local_altlogin', helper::post_logout_redirect_url()->out(false)),
+            0
+        ));
+
+        $settings->add(new admin_setting_configtext(
+            'local_altlogin/endsessionurl',
+            get_string('endsessionurl', 'local_altlogin'),
+            get_string('endsessionurl_desc', 'local_altlogin',
+                helper::detected_end_session_endpoint() ?: get_string('endsessionnone', 'local_altlogin')),
+            '',
+            PARAM_URL
+        ));
+
         $settings->add(new admin_setting_configtext(
             'local_altlogin/heading',
             get_string('heading', 'local_altlogin'),
