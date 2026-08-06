@@ -19,8 +19,8 @@ namespace local_altlogin;
 /**
  * Checkbox that also points $CFG->alternateloginurl at this plugin.
  *
- * Follows the same pattern as auth_shibboleth's WAYF setting: ticking the box writes
- * the alternate login URL, unticking it clears the value again — but only if it is
+ * Follows the same pattern as auth_shibboleth's WAYF setting: checking the box writes
+ * the alternate login URL, unchecking it clears the value again — but only if it is
  * still ours, so we never stomp on a setting another plugin or an admin put there.
  *
  * @package    local_altlogin

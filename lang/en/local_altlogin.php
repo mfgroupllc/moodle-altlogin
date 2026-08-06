@@ -35,9 +35,9 @@ $string['bypassinfo'] = '<p>If the provider below stops working, these URLs alwa
 <p>From the command line, <code>php local/altlogin/cli/wire.php --disable</code> clears the alternate login URL outright.</p>';
 
 $string['enabled'] = 'Use this page as the site login page';
-$string['enabled_desc'] = 'Sets <code>$CFG->alternateloginurl</code> to <code>{$a}</code>, so every visit to the normal login page arrives here. Unticking this clears the setting again. Has no effect if <code>alternateloginurl</code> is hard-coded in <code>config.php</code>.';
+$string['enabled_desc'] = 'Sets <code>$CFG->alternateloginurl</code> to <code>{$a}</code>, so every visit to the normal login page arrives here. Unchecking this clears the setting again. Has no effect if <code>alternateloginurl</code> is hard-coded in <code>config.php</code>.';
 
-$string['mode'] = 'Behaviour';
+$string['mode'] = 'Behavior';
 $string['mode_desc'] = 'What happens when someone lands on the login page.';
 $string['mode:redirect'] = 'Redirect straight to the provider';
 $string['mode:chooser'] = 'Show a provider chooser page';

@@ -231,7 +231,7 @@ class helper {
      * login attempt back to the alternate login URL.
      *
      * @param int $errorcode
-     * @return string Empty when the code is not one we recognise.
+     * @return string Empty when the code is not one we recognize.
      */
     public static function error_message(int $errorcode): string {
         switch ($errorcode) {

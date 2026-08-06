@@ -13,7 +13,7 @@ Built for the `learn-dev.escoffieronline.com` environment (Moodle 4.5 / PHP 8.2)
 * **Redirect mode** (default) bounces the visitor straight to the configured OAuth 2
   issuer via `auth/oauth2/login.php`.
 * **Chooser mode** shows a small branded page with the provider button(s) instead — handy
-  while you are still deciding which provider to standardise on.
+  while you are still deciding which provider to standardize on.
 * **The bypass**: `?alt=off` skips all of it and hands you the stock login form, the same
   way `?saml=off` works in `auth_saml2`.
 
@@ -34,8 +34,8 @@ Site administration → Plugins → Local plugins → **Alternate login page**.
 
 | Setting | Default | What it does |
 |---|---|---|
-| Use this page as the site login page | off | Writes `$CFG->alternateloginurl`. Unticking clears it again — but only if it still points here, so it will not stomp on saml2 or shibboleth. |
-| Behaviour | Redirect straight to the provider | Redirect vs. chooser page. |
+| Use this page as the site login page | off | Writes `$CFG->alternateloginurl`. Unchecking clears it again — but only if it still points here, so it will not stomp on saml2 or shibboleth. |
+| Behavior | Redirect straight to the provider | Redirect vs. chooser page. |
 | OAuth 2 provider | None | The issuer to use. Only issuers that are enabled and available for login are listed — set them up under Server → OAuth 2 services first. |
 | Bypass parameter | `alt` | The parameter name for the backdoor. `alt` gives you `?alt=off`. |
 | List every identity provider | off | Chooser mode only: list every IdP the site advertises (oauth2, saml2, CAS…) rather than just the configured one. |
@@ -85,7 +85,7 @@ apparently never logged out at all.
 This plugin handles it in three parts:
 
 * **Always on.** An observer on `\core\event\user_loggedout` drops a short-lived cookie,
-  and the login page honours it by showing the sign-in page rather than redirecting. You
+  and the login page honors it by showing the sign-in page rather than redirecting. You
   stay logged out of Moodle. Clicking the provider button will still sign you back in
   without a prompt, because the provider session is untouched.
 * **"Send people here after logging out".** A URL to land on instead — usually the identity
@@ -114,7 +114,7 @@ This plugin handles it in three parts:
    is nothing.
 
 If logout starts failing after you enable this, turn the setting off — logout goes back to
-Moodle's own behaviour immediately.
+Moodle's own behavior immediately.
 
 ### Providers with no end-session endpoint
 
@@ -125,7 +125,7 @@ OAuth server for WordPress does not publish one either. Check before assuming:
 curl -s "<issuer base url>/.well-known/openid-configuration" | python3 -m json.tool | grep -i endpoint
 ```
 
-No `end_session_endpoint` in the output means single logout is not available, full stop.
+No `end_session_endpoint` in the output means single logout is not available, period.
 Use the post-logout redirect URL instead and let people sign out of the provider on its own
 site. Do not try to substitute the provider's ordinary web logout URL — WordPress's, for
 instance, needs a `_wpnonce` that Moodle cannot generate, and `wp_safe_redirect` drops any
@@ -154,6 +154,6 @@ password login stays reachable; if you need to genuinely close that off, disable
 Moodle 4.5+ (`2024100700`). Uses `auth_oauth2` and core's `\core\oauth2` API; no database
 tables of its own and no personal data.
 
-## Licence
+## License
 
 GNU GPL v3 or later.

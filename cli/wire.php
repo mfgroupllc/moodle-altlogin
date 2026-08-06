@@ -32,7 +32,7 @@ require_once($CFG->libdir . '/clilib.php');
 
 use local_altlogin\helper;
 
-[$options, $unrecognised] = cli_get_params([
+[$options, $unrecognized] = cli_get_params([
     'enable' => false,
     'disable' => false,
     'status' => false,
@@ -41,8 +41,8 @@ use local_altlogin\helper;
     'h' => 'help',
 ]);
 
-if ($unrecognised) {
-    cli_error(get_string('cliunknowoption', 'admin', implode(PHP_EOL . '  ', $unrecognised)));
+if ($unrecognized) {
+    cli_error(get_string('cliunknowoption', 'admin', implode(PHP_EOL . '  ', $unrecognized)));
 }
 
 if ($options['help'] || (!$options['enable'] && !$options['disable'] && !$options['status'])) {
