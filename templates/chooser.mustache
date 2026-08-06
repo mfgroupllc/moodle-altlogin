@@ -1,0 +1,91 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_altlogin/chooser
+
+    Identity provider chooser for the alternate login page.
+
+    Context variables required for this template:
+    * heading - Page heading.
+    * hasintro - Whether intro text was configured.
+    * intro - Formatted intro HTML.
+    * hasnotice - Whether a notice should be shown.
+    * notice - Notice text, e.g. why the last login attempt failed.
+    * hasproviders - Whether any identity providers are available.
+    * providers - Array of {url, name, iconurl}.
+    * showlocallink - Whether to link to the site account login form.
+    * locallinkurl - Bypass URL for the site account login form.
+    * forgoturl - Forgotten password URL.
+
+    Example context (json):
+    {
+        "heading": "Escoffier Online",
+        "hasintro": true,
+        "intro": "<p>Sign in with your school account.</p>",
+        "hasnotice": false,
+        "notice": "",
+        "hasproviders": true,
+        "providers": [
+            {"url": "https://example.com/auth/oauth2/login.php?id=1", "name": "Microsoft", "iconurl": ""}
+        ],
+        "showlocallink": true,
+        "locallinkurl": "https://example.com/local/altlogin/index.php?alt=off",
+        "forgoturl": "https://example.com/login/forgot_password.php"
+    }
+}}
+<div class="local-altlogin row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card mt-4">
+            <div class="card-body">
+                <h2 class="card-title h4 text-center">{{heading}}</h2>
+
+                {{#hasnotice}}
+                    <div class="alert alert-danger" role="alert">{{notice}}</div>
+                {{/hasnotice}}
+
+                {{#hasintro}}
+                    <div class="local-altlogin-intro">{{{intro}}}</div>
+                {{/hasintro}}
+
+                {{#hasproviders}}
+                    <div class="local-altlogin-providers">
+                        {{#providers}}
+                            <a class="btn btn-primary w-100 mb-2 d-flex align-items-center justify-content-center"
+                               href="{{url}}">
+                                {{#iconurl}}
+                                    <img src="{{iconurl}}" alt="" width="24" height="24" class="mr-2">
+                                {{/iconurl}}
+                                <span>{{name}}</span>
+                            </a>
+                        {{/providers}}
+                    </div>
+                {{/hasproviders}}
+                {{^hasproviders}}
+                    <p class="text-muted">{{#str}}noproviders, local_altlogin{{/str}}</p>
+                {{/hasproviders}}
+
+                <div class="local-altlogin-links mt-3 text-center">
+                    <a href="{{forgoturl}}">{{#str}}forgotten{{/str}}</a>
+                    {{#showlocallink}}
+                        <span class="mx-1">&middot;</span>
+                        <a href="{{locallinkurl}}">{{#str}}locallogin, local_altlogin{{/str}}</a>
+                    {{/showlocallink}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

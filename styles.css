@@ -1,0 +1,12 @@
+.local-altlogin .local-altlogin-providers .btn img {
+    max-height: 24px;
+    width: auto;
+}
+
+.local-altlogin .local-altlogin-intro {
+    margin-bottom: 1rem;
+}
+
+.local-altlogin .local-altlogin-links {
+    font-size: 0.9375rem;
+}
