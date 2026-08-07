@@ -41,8 +41,19 @@ class helper {
     /** @var int Seconds over which LOOP_THRESHOLD redirects count as a loop. */
     const LOOP_WINDOW = 30;
 
-    /** @var int Seconds the "just logged out" marker survives. */
-    const LOGOUT_MARKER_TTL = 300;
+    /**
+     * @var int Seconds the "just logged out" marker survives. Only has to outlast the
+     * redirect chain from logout.php back to here, which takes seconds — any longer and
+     * someone deliberately signing back in gets an extra click for no reason.
+     */
+    const LOGOUT_MARKER_TTL = 60;
+
+    /**
+     * @var int Core's errorcode for a session that timed out. AUTH_LOGIN_LOCKOUT shares
+     * the value, but login/index.php rewrites that one to 3 before redirecting here, so
+     * a 4 arriving at this page always means the session expired.
+     */
+    const ERRORCODE_SESSION_TIMEOUT = 4;
 
     /**
      * URL of this plugin's login page.
@@ -224,6 +235,22 @@ class helper {
     public static function reset_redirect_counter(): void {
         global $SESSION;
         unset($SESSION->local_altlogin_redirects);
+    }
+
+    /**
+     * Whether an errorcode from core means the last sign-in actually failed.
+     *
+     * An expired session is not a failure — nothing was rejected, the visitor simply sat
+     * still too long. Sending them back to the provider is the right move there: if the
+     * provider session is alive they carry straight on, and if it is not they get a
+     * prompt. Only genuine failures need the redirect suppressed, or a bad password would
+     * bounce between here and the provider forever.
+     *
+     * @param int $errorcode
+     * @return bool
+     */
+    public static function is_login_failure(int $errorcode): bool {
+        return $errorcode !== 0 && $errorcode !== self::ERRORCODE_SESSION_TIMEOUT;
     }
 
     /**

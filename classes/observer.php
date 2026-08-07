@@ -52,21 +52,24 @@ class observer {
             return;
         }
 
+        // Everything below sends the browser somewhere, so restrict it to the one script
+        // whose whole job is logging out.
+        if ((string)$SCRIPT === '/login/logout.php') {
+            // Single logout when the provider supports it, otherwise just hand the
+            // visitor over to wherever the admin wants them to land.
+            $url = helper::single_logout_url() ?? helper::logout_redirect_url();
+            if ($url) {
+                // No marker needed on this path: the visitor is being taken off Moodle
+                // outright, so there is no bounce back to the login page to suppress,
+                // and leaving one would cost them a click when they choose to return.
+                // Pre-empts the rest of require_logout(). Moodle's session is already
+                // gone; what is skipped is other auth plugins' postlogout_hook().
+                redirect($url);
+            }
+        }
+
+        // Nowhere to send them, so Moodle's own redirect to the home page stands — and
+        // that can land back on the login page, which would sign them straight back in.
         helper::set_logout_marker();
-
-        // Everything below sends the browser to the provider, so restrict it to the
-        // one script whose whole job is logging out.
-        if ((string)$SCRIPT !== '/login/logout.php') {
-            return;
-        }
-
-        // Single logout when the provider supports it, otherwise just hand the visitor
-        // over to wherever the admin wants them to land.
-        $url = helper::single_logout_url() ?? helper::logout_redirect_url();
-        if ($url) {
-            // Pre-empts the rest of require_logout(). Moodle's session is already gone
-            // by this point; what is skipped is other auth plugins' postlogout_hook().
-            redirect($url);
-        }
     }
 }

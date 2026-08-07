@@ -62,15 +62,16 @@ $wantsurl = !empty($SESSION->wantsurl) ? $SESSION->wantsurl : '';
 $issuer = helper::get_selected_issuer();
 $autoredirect = get_config('local_altlogin', 'mode') !== 'chooser';
 $notice = helper::error_message($errorcode);
-$noticetype = 'danger';
+$noticetype = $errorcode === helper::ERRORCODE_SESSION_TIMEOUT ? 'info' : 'danger';
 
 // The cookie is set by our user_loggedout observer; the parameter is how the identity
 // provider hands the visitor back after a single logout. Either one means "do not sign
 // this person straight back in".
 $loggedout = $loggedout || helper::logout_marker_present();
 
-if ($errorcode) {
-    // Something went wrong on the last attempt. Redirecting again would just hide it.
+if (helper::is_login_failure($errorcode)) {
+    // The last attempt was actually rejected. Redirecting again would just hide why,
+    // and on a bad password it would bounce between here and the provider forever.
     $autoredirect = false;
 } else if ($loggedout) {
     $autoredirect = false;

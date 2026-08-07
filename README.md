@@ -84,10 +84,12 @@ apparently never logged out at all.
 
 This plugin handles it in three parts:
 
-* **Always on.** An observer on `\core\event\user_loggedout` drops a short-lived cookie,
-  and the login page honors it by showing the sign-in page rather than redirecting. You
-  stay logged out of Moodle. Clicking the provider button will still sign you back in
-  without a prompt, because the provider session is untouched.
+* **Always on.** An observer on `\core\event\user_loggedout` drops a cookie lasting sixty
+  seconds, and the login page honors it by showing the sign-in page rather than
+  redirecting. You stay logged out of Moodle. Clicking the provider button will still sign
+  you back in without a prompt, because the provider session is untouched. The cookie is
+  *not* set when one of the two settings below sends you off the site — there is no
+  bounce-back to suppress in that case, and it would only cost you a click on the way in.
 * **"Send people here after logging out".** A URL to land on instead — usually the identity
   provider's own site, so people carry on from somewhere familiar rather than staring at a
   sign-in page they did not ask for, and can sign out of the provider from there. Leave it
@@ -135,7 +137,11 @@ instance, needs a `_wpnonce` that Moodle cannot generate, and `wp_safe_redirect`
 
 * **Failed logins do not redirect.** When core bounces a failed attempt back to the
   alternate login URL it appends `errorcode`; seeing that, this page shows the chooser with
-  the error rather than throwing you at the provider again.
+  the error rather than throwing you at the provider again. **An expired session is
+  excluded** — `errorcode=4` means the visitor sat still too long, not that anything was
+  rejected, so they are redirected as normal and carry straight on if the provider session
+  is still alive. (`AUTH_LOGIN_LOCKOUT` is also 4, but core rewrites it to 3 before
+  redirecting, so the two cannot be confused here.)
 * **Loop breaker.** More than three redirects within thirty seconds pauses the automatic
   redirect for that session and shows the chooser with the bypass URL.
 * **Unavailable issuer.** If the configured issuer is deleted or disabled, the page falls
