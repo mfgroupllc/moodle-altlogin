@@ -1,10 +1,8 @@
-# local_altlogin — Alternate Moodle login page
+# local_altlogin: Alternate Moodle login page
 
-A small `local` plugin that replaces the site login page with one that sends people
-straight to a chosen OAuth 2 provider, and keeps a saml2-style backdoor open so you can
-always reach the standard Moodle login form.
-
-Built for the `learn-dev.escoffieronline.com` environment (Moodle 4.5 / PHP 8.2).
+A Moodle local plugin that sends people directly to a chosen OAuth 2 provider or shows
+a provider chooser, while keeping a saml2-style bypass available for reaching Moodle's
+standard login form.
 
 ## What it does
 
@@ -21,7 +19,7 @@ Built for the `learn-dev.escoffieronline.com` environment (Moodle 4.5 / PHP 8.2)
 
 ```bash
 # from the Moodle web root
-git clone git@github.com:Auguste-Escoffier/moodle-altlogin.git local/altlogin
+git clone git@github.com:mfgroupllc/moodle-altlogin.git local/altlogin
 php admin/cli/upgrade.php --non-interactive
 ```
 
@@ -45,7 +43,7 @@ Site administration → Plugins → Local plugins → **Alternate login page**.
 ### Doing it in `config.php` instead
 
 ```php
-$CFG->alternateloginurl = 'https://learn-dev.escoffieronline.com/local/altlogin/index.php';
+$CFG->alternateloginurl = $CFG->wwwroot . '/local/altlogin/index.php';
 ```
 
 If you set it here rather than in the database, the checkbox in the admin UI cannot turn
@@ -56,8 +54,8 @@ it off — `config.php` wins. Remove the line to disable.
 Three independent ways, in order of how much has to still be working:
 
 ```
-https://learn-dev.escoffieronline.com/local/altlogin/index.php?alt=off
-https://learn-dev.escoffieronline.com/login/index.php?loginredirect=0
+https://moodle.example.com/local/altlogin/index.php?alt=off
+https://moodle.example.com/login/index.php?loginredirect=0
 ```
 
 ```bash
@@ -157,8 +155,8 @@ password login stays reachable; if you need to genuinely close that off, disable
 
 ## Requirements
 
-Moodle 4.5+ (`2024100700`). Uses `auth_oauth2` and core's `\core\oauth2` API; no database
-tables of its own and no personal data.
+Moodle 4.5 or 5.0 (`2024100700` minimum). Uses `auth_oauth2` and core's `\core\oauth2`
+API; no database tables of its own and no personal data.
 
 ## License
 

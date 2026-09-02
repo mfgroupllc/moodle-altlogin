@@ -18,7 +18,7 @@
  * Plugin version information.
  *
  * @package    local_altlogin
- * @copyright  2026 Auguste Escoffier School of Culinary Arts
+ * @copyright  2026 Christopher Murad
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
